@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<title>SecureRelease report - {{profile}} - {{scan_id}}</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1b1f24;--muted:#5b6470;--line:#e2e5ea;--accent:#2f5cd6;
+--fail:#c62828;--error:#8e24aa;--warn:#e08600;--nt:#546e7a;--pass:#2e7d32;
+--critical:#7f0000;--high:#c62828;--medium:#e08600;--low:#1565c0;--info:#546e7a;--unknown:#546e7a;
+--code:#f0f2f5}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1318;--card:#171c23;--text:#e6e9ee;--muted:#98a2b0;--line:#2a313b;--accent:#7aa2ff;--code:#0f1318;
+--fail:#ef5350;--error:#ce93d8;--warn:#ffb74d;--nt:#90a4ae;--pass:#66bb6a;--critical:#ff6e6e;--high:#ef5350;--medium:#ffb74d;--low:#64b5f6;--info:#90a4ae;--unknown:#90a4ae}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+header h1{margin:0 0 4px;font-size:26px}
+header p{margin:0;color:var(--muted)}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:20px 0}
+.meta div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.meta b{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.meta span{word-break:break-all}
+.verdict{border-radius:12px;padding:16px 18px;margin:18px 0;border:1px solid var(--line);border-left:6px solid var(--pass);background:var(--card)}
+.verdict.attention{border-left-color:var(--fail)}.verdict.gaps{border-left-color:var(--warn)}
+.verdict h2{margin:0 0 4px;font-size:18px}.verdict p{margin:0;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:18px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;border-top:4px solid var(--line)}
+.card .n{font-size:28px;font-weight:700;line-height:1.1}.card .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.s-FAIL{--c:var(--fail)}.s-ERROR{--c:var(--error)}.s-WARN{--c:var(--warn)}.s-NOT_TESTED{--c:var(--nt)}.s-PASS{--c:var(--pass)}
+.card[class*=s-]{border-top-color:var(--c)}.card[class*=s-] .n{color:var(--c)}
+.sev{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.badge{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid currentColor;white-space:nowrap}
+.badge.status{color:var(--c)}
+.sev-CRITICAL{color:var(--critical)}.sev-HIGH{color:var(--high)}.sev-MEDIUM{color:var(--medium)}.sev-LOW{color:var(--low)}.sev-INFO{color:var(--info)}.sev-UNKNOWN{color:var(--unknown)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:22px 0 6px;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:2}
+.toolbar button{cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:4px 12px;font:inherit;font-size:13px}
+.toolbar button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.toolbar input{flex:1;min-width:180px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:8px;padding:5px 10px;font:inherit;font-size:13px}
+h2.group{margin:28px 0 8px;font-size:18px;border-bottom:1px solid var(--line);padding-bottom:6px}
+h2.group small{color:var(--muted);font-weight:400;font-size:13px}
+details.f{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:10px;margin:8px 0}
+details.f>summary{cursor:pointer;list-style:none;padding:10px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+details.f>summary::-webkit-details-marker{display:none}
+details.f>summary::before{content:"\25B8";color:var(--muted)}details.f[open]>summary::before{content:"\25BE"}
+.title{font-weight:600;flex:1;min-width:200px}
+.body{padding:2px 16px 14px;border-top:1px solid var(--line)}
+.body dl{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;margin:10px 0}
+.body dt{color:var(--muted);font-size:13px}.body dd{margin:0;word-break:break-word}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;max-height:320px;margin:6px 0 0}
+.empty{display:none;color:var(--muted);padding:16px;text-align:center}
+ul.notes{padding-left:20px}
+table{border-collapse:collapse;width:100%}td,th{text-align:left;border-bottom:1px solid var(--line);padding:6px 8px;font-size:14px}
+footer{margin-top:36px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+@media print{.toolbar{display:none}details.f{break-inside:avoid}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>SecureRelease security readiness report</h1>
+<p>Profile <code>{{profile}}</code> &middot; scan <code>{{scan_id}}</code></p>
+</header>
+
+<div class="meta">
+<div><b>Targets</b><span>{{targets}}</span></div>
+<div><b>Started</b><span>{{started}}</span></div>
+<div><b>Finished</b><span>{{finished}}</span></div>
+<div><b>SecureRelease</b><span>{{version}}</span></div>
+</div>
+
+<div class="verdict {{verdict_class}}">
+<h2>{{verdict_title}}</h2>
+<p>{{verdict_text}}</p>
+</div>
+
+<div class="cards">{{status_cards}}</div>
+<div class="sev">{{severity_badges}}</div>
+
+<div class="toolbar" role="toolbar" aria-label="Filter findings">
+{{filter_buttons}}
+<input id="q" type="search" placeholder="Search findings, assets, check IDs..." aria-label="Search findings">
+</div>
+
+{{groups}}
+<div class="empty" id="empty">No findings match the current filter.</div>
+
+<h2 class="group">Notes</h2>
+<ul class="notes">{{notes}}</ul>
+
+<h2 class="group">Tools</h2>
+<table><tbody>{{tools}}</tbody></table>
+
+<footer>{{disclaimer}}<br>Generated by SecureRelease {{version}}. This file is self-contained and loads no external resources.</footer>
+</div>
+<script>
+(function(){
+  var active={}, q=document.getElementById('q'), items=[].slice.call(document.querySelectorAll('details.f'));
+  var buttons=[].slice.call(document.querySelectorAll('.toolbar button'));
+  function apply(){
+    var term=q.value.trim().toLowerCase(), shown=0;
+    var keys=Object.keys(active).filter(function(k){return active[k];});
+    items.forEach(function(el){
+      var ok=(!keys.length||keys.indexOf(el.getAttribute('data-status'))>-1)&&(!term||el.getAttribute('data-search').indexOf(term)>-1);
+      el.style.display=ok?'':'none'; if(ok)shown++;
+    });
+    [].forEach.call(document.querySelectorAll('section.grp'),function(s){
+      s.style.display=s.querySelector('details.f:not([style*="display: none"])')?'':'none';
+    });
+    document.getElementById('empty').style.display=shown?'none':'block';
+  }
+  buttons.forEach(function(b){b.addEventListener('click',function(){
+    var s=b.getAttribute('data-status'); active[s]=!active[s]; b.setAttribute('aria-pressed',active[s]?'true':'false'); apply();
+  });});
+  q.addEventListener('input',apply);
+  var first=items.filter(function(el){return el.getAttribute('data-status')==='FAIL';}).slice(0,3);
+  first.forEach(function(el){el.open=true;});
+})();
+</script>
+</body>
+</html>
