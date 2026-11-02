@@ -233,27 +233,12 @@ class ApiScanner:
     # ---- coverage -------------------------------------------------------------
     def _coverage(self, probeable: int) -> Finding:
         total = len(self.spec.operations)
-<<<<<<< HEAD
         probed = len(self.probes)
         missed = [s for s in self.skipped][:MAX_LISTED]
         no_spec = self.spec_origin is None
         evidence = {
             "spec": self.spec_origin, "title": self.spec.title, "openapi": self.spec.spec_version,
             "operations_in_spec": total, "operations_probed": probed, "operations_skipped": len(self.skipped),
-=======
-        probed = sum(p.best is not None for p in self.probes)
-        skipped = self.skipped + [
-            {"operation": p.op.key, "reason": "no HTTP response received"}
-            for p in self.probes if p.best is None
-        ]
-        missed = skipped[:MAX_LISTED]
-        excluded_delete = sum(s["reason"] == "DELETE requests are never sent" for s in skipped)
-        no_spec = self.spec_origin is None
-        evidence = {
-            "spec": self.spec_origin, "title": self.spec.title, "openapi": self.spec.spec_version,
-            "operations_in_spec": total, "operations_probed": probed, "operations_skipped": len(skipped),
-            "operations_eligible": probeable, "delete_operations_excluded": excluded_delete,
->>>>>>> dce590a (updated version of cli)
             "skipped": missed, "secured_operations": sum(1 for o in self.spec.operations if o.secured),
             "security_schemes": self.spec.security_schemes, "request_budget_used": self.client.requests_made,
         }
@@ -264,33 +249,11 @@ class ApiScanner:
                 evidence, "Pass --openapi-spec so every documented endpoint can be exercised and coverage measured.",
             )
         full = probed == total
-<<<<<<< HEAD
         return _finding(
             "COVERAGE", "Endpoint coverage", "PASS" if full else "WARN", "INFO", self.base,
             f"Probed {probed} of {total} documented operations." + ("" if full else " Skipped operations are listed in evidence."),
             evidence,
             "Coverage describes requests sent, not security assurance. Enable --allow-mutating on a disposable test environment to cover write operations.",
-=======
-        explanation = (
-            f" {excluded_delete} DELETE operation(s) intentionally excluded: the scanner never deletes data."
-            if excluded_delete else ""
-        )
-        advice = "Coverage describes responses received, not successful business flows or security assurance."
-        if excluded_delete:
-            advice += " Test DELETE behavior separately with disposable fixtures; no CLI flag enables DELETE."
-        if any(s["reason"] == "mutating method (use --allow-mutating)" for s in skipped):
-            advice += " Enable --allow-mutating on a disposable test environment to cover POST/PUT/PATCH."
-        if any(s["reason"] == "request budget exhausted" for s in skipped):
-            advice += " Raise --max-requests to cover operations skipped by the request budget."
-        if any(s["reason"] == "no HTTP response received" for s in skipped):
-            advice += " Resolve connectivity errors before relying on coverage."
-        return _finding(
-            "COVERAGE", "Endpoint coverage", "PASS" if full else "WARN", "INFO", self.base,
-            f"Probed {probed} of {total} documented operations." + explanation
-            + ("" if full else " Skipped operations are listed in evidence."),
-            evidence,
-            advice,
->>>>>>> dce590a (updated version of cli)
         )
 
     # ---- passive checks -------------------------------------------------------

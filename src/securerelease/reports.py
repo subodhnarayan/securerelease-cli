@@ -62,12 +62,7 @@ STATUS_ORDER = ("FAIL", "ERROR", "WARN", "NOT_TESTED", "PASS")
 SEVERITY_RANK = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3, "INFO": 4, "UNKNOWN": 5}
 SOURCE_GROUPS = {
     "securerelease_ui": "UI scanner", "securerelease_api": "API scanner", "native_http_checks": "Website HTTP baseline",
-<<<<<<< HEAD
     "zap": "OWASP ZAP (DAST)", "trivy": "Trivy (dependencies, IaC)", "gitleaks": "Gitleaks (secrets)", "semgrep": "Semgrep (SAST)",
-=======
-    "gitleaks": "Gitleaks (secrets)", "trivy": "Trivy (dependencies, IaC)", "semgrep": "Semgrep (SAST)",
-    "zap": "OWASP ZAP (DAST)",
->>>>>>> dce590a (updated version of cli)
 }
 
 
@@ -140,20 +135,10 @@ def as_html(report: ScanReport) -> str:
     grouped: dict[str, list[Finding]] = {}
     for f in findings:
         grouped.setdefault(SOURCE_GROUPS.get(f.source, f.source), []).append(f)
-<<<<<<< HEAD
     groups = "".join(
         f'<section class="grp"><h2 class="group">{_e(name)} <small>{len(items)} finding(s)</small></h2>'
         + "".join(_finding_html(f) for f in items) + "</section>"
         for name, items in grouped.items()) or '<p class="empty" style="display:block">No checks were run.</p>'
-=======
-    group_names = [name for name in SOURCE_GROUPS.values() if name in grouped]
-    group_names.extend(name for name in grouped if name not in group_names)
-    groups = "".join(
-        f'<section class="grp"><h2 class="group">{_e(name)} <small>{len(items)} finding(s)</small></h2>'
-        + "".join(_finding_html(f) for f in items) + "</section>"
-        for name in group_names
-        for items in [grouped[name]]) or '<p class="empty" style="display:block">No checks were run.</p>'
->>>>>>> dce590a (updated version of cli)
 
     tools = "".join(f"<tr><td>{_e(name)}</td><td>{_e(version)}</td></tr>" for name, version in report.tool_versions.items())
     values = {

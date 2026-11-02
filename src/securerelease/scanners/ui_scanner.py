@@ -11,11 +11,7 @@ from securerelease.auth import AuthError, cookies_from_storage_state, credential
 from securerelease.models import Finding
 from securerelease.scanners.http_baseline import TargetRejected
 from securerelease.scanners.safe_http import BudgetExceeded, Reply, SafeClient, ScopeViolation
-<<<<<<< HEAD
 from securerelease.scanners.ui_browser import BrowserUnavailable, browser_available, crawl_with_browser
-=======
-from securerelease.scanners.ui_browser import BrowserLoginFailed, BrowserUnavailable, browser_available, crawl_with_browser
->>>>>>> dce590a (updated version of cli)
 from securerelease.scanners.ui_checks import MAX_LISTED, REDIRECT_PARAM, SOURCE, _finding, analyze
 from securerelease.scanners.ui_crawler import crawl, login_with_form
 from securerelease.scanners.ui_snapshot import PageSnapshot
@@ -212,10 +208,6 @@ def scan_ui(
 
     findings: list[Finding] = []
     versions: dict[str, str] = {}
-<<<<<<< HEAD
-=======
-    authenticated = False
->>>>>>> dce590a (updated version of cli)
     use_browser = engine == "browser" or (engine == "auto" and browser_available())
     with client:
         snapshots: list[PageSnapshot] = []
@@ -228,24 +220,6 @@ def scan_ui(
                     login=(login_url, username, password) if login_url and username and password else None,
                 )
                 versions["ui-engine"] = "playwright"
-<<<<<<< HEAD
-=======
-                authenticated = stats.get("login_verified", False)
-                if login_url and username and password:
-                    findings.append(_finding(
-                        "AUTH-LOGIN", "Scripted login", "PASS", "INFO", login_url,
-                        "The password form disappeared and the browser session survived reloading the UI target.",
-                        {"login_verified": authenticated},
-                        "Verification covers the browser login transition and target reload, not every authorization rule.",
-                    ))
-            except BrowserLoginFailed as exc:
-                return [_finding(
-                    "AUTH-LOGIN", "Scripted login", "ERROR", "INFO", login_url or url,
-                    "The scripted login could not be verified, so authenticated pages were not scanned.",
-                    {"reason": str(exc)},
-                    "Verify the test credentials and login flow. Use a protected UI URL as the scan target.",
-                )], {"ui-engine": "playwright"}
->>>>>>> dce590a (updated version of cli)
             except BrowserUnavailable as exc:
                 findings.append(Finding(
                     check_id="TOOL-PLAYWRIGHT-MISSING", title="UI: Browser engine", status="NOT_TESTED", severity="INFO",
@@ -256,13 +230,7 @@ def scan_ui(
                 return findings, versions
         else:
             if login_url and username and password:
-<<<<<<< HEAD
                 findings.append(login_with_form(client, login_url, username, password))
-=======
-                login_finding = login_with_form(client, login_url, username, password)
-                findings.append(login_finding)
-                authenticated = login_finding.status == "PASS"
->>>>>>> dce590a (updated version of cli)
             snapshots, stats = crawl(client, url, max_pages=max_pages)
             versions["ui-engine"] = "built-in crawler"
 
@@ -285,12 +253,7 @@ def scan_ui(
                 "ACTIVE-PROBES", "Reflected input and open redirect probes", "NOT_TESTED", "INFO", url,
                 "Parameter-mutating probes are active tests and require --authorized.", None,
                 "Rerun with --authorized against an application you own."))
-<<<<<<< HEAD
         findings.insert(0, _coverage(url, stats, bool(login_url or storage_state or headers), len(snapshots), client.requests_made))
-=======
-        stats["authentication_configured"] = bool(login_url or storage_state or headers)
-        findings.insert(0, _coverage(url, stats, authenticated, len(snapshots), client.requests_made))
->>>>>>> dce590a (updated version of cli)
     return findings, versions
 
 
