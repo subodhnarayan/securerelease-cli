@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SecureRelease | Product Demo</title>
+<style>
+@page { size: 1280px 720px; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #e4e9ef; color: #152b42; font-family: Arial, sans-serif; }
+.slide { width: 1280px; height: 720px; padding: 54px 70px; margin: 22px auto; background: #fafcfe; position: relative; break-after: page; }
+.slide:last-child { break-after: auto; }
+.dark { background: #102a43; color: #fff; }
+.eyebrow { color: #167968; text-transform: uppercase; letter-spacing: 3px; font-size: 15px; font-weight: bold; margin-bottom: 20px; }
+.dark .eyebrow { color: #71dfba; }
+h1 { font-size: 68px; letter-spacing: -2px; line-height: 1.08; margin: 24px 0; }
+h2 { font-size: 43px; letter-spacing: -1px; margin: 0 0 18px; line-height: 1.15; }
+h3 { font-size: 24px; margin: 0 0 15px; }
+p { font-size: 23px; line-height: 1.45; margin: 0 0 18px; }
+.sub { color: #546a80; font-size: 22px; max-width: 1030px; }
+.dark .sub { color: #c3d6e5; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 26px; }
+.two { grid-template-columns: 1fr 1fr; }
+.card { padding: 23px; background: #edf3f8; border-top: 4px solid #16836f; border-radius: 6px; }
+.card p, li { font-size: 20px; line-height: 1.4; }
+ul { margin: 0; padding-left: 23px; }
+li { margin-bottom: 12px; }
+.bar { margin-top: 26px; padding: 18px 22px; background: #e0f3eb; border-radius: 6px; font-size: 22px; line-height: 1.4; }
+.terminal { background: #102a43; color: #8eebc8; padding: 27px; font: 25px/1.65 monospace; border-radius: 8px; margin-top: 24px; }
+.dark .terminal { border: 1px solid #426079; }
+.foot { position: absolute; bottom: 25px; left: 70px; right: 70px; display: flex; justify-content: space-between; font-size: 14px; color: #62778c; }
+.dark .foot { color: #b4cbdc; }
+.small { font-size: 17px; line-height: 1.45; }
+.accent { color: #71dfba; }
+.step { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+.num { flex: 0 0 38px; height: 38px; background: #167968; color: #fff; border-radius: 50%; text-align: center; padding-top: 7px; font-size: 21px; }
+.step p { font-size: 22px; margin: 0; }
+svg text { font-family: Arial, sans-serif; }
+@media print { body { background: white; } .slide { margin: 0; print-color-adjust: exact; -webkit-print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<section class="slide dark">
+<div class="eyebrow">SecureRelease / Product demo</div>
+<h1>Build your app.<br>Know what to fix<br><span class="accent">before you ship.</span></h1>
+<p class="sub">Security readiness for individual developers and small startups.<br>One workflow for your website, API and source code.</p>
+<div class="terminal">securerelease init<br>securerelease run</div>
+<div class="foot"><span>Early release v0.1 / Local-first CLI</span><span>01 / 06</span></div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">The problem / Who feels it</div>
+<h2>Small teams ship software.<br>Security expertise does not ship with it.</h2>
+<p class="sub">Solo developers and early-stage startups need an accessible first security check before deployment.</p>
+<div class="grid">
+<div class="card"><h3>Knowledge gap</h3><p>Which checks matter? How do we test authentication, dependencies and browser behavior?</p></div>
+<div class="card"><h3>Fragmented workflow</h3><p>Free tools exist, but installing several engines and interpreting different outputs takes effort.</p></div>
+<div class="card"><h3>Real cost</h3><p>Time away from building, paid-tool or specialist budgets, and rework when issues surface late.</p></div>
+</div>
+<div class="bar"><strong>Our opportunity:</strong> reduce setup and interpretation friction, not claim that existing security tools are all paid.</div>
+<p class="small" style="margin-top:16px">Customer hypothesis: teams will value one guided release-check workflow. Time savings, willingness to pay and adoption still need validation.</p>
+<div class="foot"><span>Problem and cost / No invented market or savings figures</span><span>02 / 06</span></div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">One main flow / From running app to action</div>
+<h2>Configure once. Scan. Review. Improve.</h2>
+<div class="grid two" style="margin-top:26px">
+<div>
+<div class="step"><span class="num">1</span><p><strong>Start your app</strong><br>Frontend and backend run in separate terminals.</p></div>
+<div class="step"><span class="num">2</span><p><strong>Run securerelease init</strong><br>Enter UI/API URLs, OpenAPI spec, source folder and test credentials.</p></div>
+<div class="step"><span class="num">3</span><p><strong>Run securerelease run</strong><br>Execute the configured checks and write one HTML report.</p></div>
+<div class="step"><span class="num">4</span><p><strong>Review evidence, fix, rerun</strong><br>Start with coverage gaps and high-impact findings.</p></div>
+</div>
+<div class="card">
+<h3>What the live demo shows</h3>
+<p>Scan the original app, then repeat the same workflow against the improved app.</p>
+<ul><li>Compare evidence, not just finding counts.</li><li>Show authentication, headers, ownership and rate-limit signals.</li><li>Keep inherited dependency issues visible.</li></ul>
+<p class="small">Same default report path: reports/securerelease-report.html. The next run overwrites it.</p>
+</div>
+</div>
+<div class="foot"><span>Prerequisites: installed engines, running targets and valid test credentials</span><span>03 / 06</span></div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Simple architecture / One orchestrator, multiple checks</div>
+<h2>Unify proven tools. Add app-level context.</h2>
+<svg width="1140" height="340" viewBox="0 0 1140 340" role="img" aria-label="Settings feed the CLI, which dispatches built-in and external scanners, then combines their findings into a report and exit code.">
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#62778c"/></marker></defs>
+<g fill="none" stroke="#62778c" stroke-width="2.5" marker-end="url(#arrow)">
+<path d="M210 165 H260"/><path d="M480 165 H510 V78 H550"/><path d="M480 165 H510 V252 H550"/>
+<path d="M825 78 H865 V165 H900"/><path d="M825 252 H865 V165 H900"/>
+</g>
+<rect x="0" y="106" width="210" height="118" rx="10" fill="#edf3f8"/>
+<text x="105" y="141" text-anchor="middle" font-size="21" font-weight="bold" fill="#152b42">Settings + targets</text>
+<text x="105" y="172" text-anchor="middle" font-size="18" fill="#546a80">URLs / source folder</text>
+<text x="105" y="199" text-anchor="middle" font-size="18" fill="#546a80">Test credentials</text>
+<rect x="260" y="95" width="220" height="140" rx="10" fill="#102a43"/>
+<text x="370" y="133" text-anchor="middle" font-size="23" font-weight="bold" fill="white">CLI orchestrator</text>
+<text x="370" y="167" text-anchor="middle" font-size="18" fill="#bcebdc">Profile + target policy</text>
+<text x="370" y="196" text-anchor="middle" font-size="18" fill="#bcebdc">Budgets + authorization</text>
+<rect x="550" y="20" width="275" height="118" rx="10" fill="#e0f3eb"/>
+<text x="687" y="54" text-anchor="middle" font-size="22" font-weight="bold" fill="#152b42">Built-in scanners</text>
+<text x="687" y="86" text-anchor="middle" font-size="19" fill="#152b42">UI / API / HTTP baseline</text>
+<text x="687" y="114" text-anchor="middle" font-size="17" fill="#546a80">Playwright for rendered UI</text>
+<rect x="550" y="193" width="275" height="118" rx="10" fill="#edf3f8"/>
+<text x="687" y="228" text-anchor="middle" font-size="22" font-weight="bold" fill="#152b42">External adapters</text>
+<text x="687" y="260" text-anchor="middle" font-size="19" fill="#152b42">Trivy / Gitleaks / Semgrep</text>
+<text x="687" y="288" text-anchor="middle" font-size="17" fill="#546a80">ZAP in separate DAST profile</text>
+<rect x="900" y="95" width="240" height="140" rx="10" fill="#102a43"/>
+<text x="1020" y="132" text-anchor="middle" font-size="22" font-weight="bold" fill="white">Normalized findings</text>
+<text x="1020" y="166" text-anchor="middle" font-size="18" fill="#bcebdc">Evidence + remediation</text>
+<text x="1020" y="198" text-anchor="middle" font-size="18" fill="#bcebdc">HTML report + CI exit code</text>
+</svg>
+<div class="bar"><strong>Local-first, not offline-only:</strong> the CLI runs locally; external engines may fetch rules or vulnerability databases and follow their own network behavior.</div>
+<div class="foot"><span>HTTP and HTTPS supported / Local and active targets require explicit opt-in</span><span>04 / 06</span></div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Engineering tradeoffs / Trust over a green badge</div>
+<h2>Useful coverage without unsafe defaults.</h2>
+<div class="grid">
+<div class="card"><h3>Build vs. integrate</h3><p><strong>Compared:</strong> write every security engine or wrap established tools.</p><p><strong>Choice:</strong> integrate Trivy, Gitleaks and Semgrep; build UI/API checks.</p><p class="small">Tradeoff: faster breadth, but engine installation and output normalization remain necessary.</p></div>
+<div class="card"><h3>Crawler vs. browser</h3><p><strong>Problem:</strong> a plain HTTP crawler cannot see React-rendered login forms.</p><p><strong>Choice:</strong> Playwright for JavaScript UIs; keep the lightweight crawler.</p><p class="small">Tradeoff: better rendered-page coverage, but browser setup and runtime cost.</p></div>
+<div class="card"><h3>Coverage vs. safety</h3><p><strong>Compared:</strong> probe every method or require explicit authorization.</p><p><strong>Choice:</strong> gate active tests and writes; never send DELETE.</p><p class="small">Tradeoff: some checks remain skipped. Report that honestly rather than mark them PASS.</p></div>
+</div>
+<div class="bar"><strong>Reliability improvement:</strong> browser login now waits for the password form to disappear and checks that the session survives a target reload.</div>
+<div class="foot"><span>Readiness checks, not a penetration test or security certification</span><span>05 / 06</span></div>
+</section>
+
+<section class="slide dark">
+<div class="eyebrow">Next / Product roadmap and first users</div>
+<h2>Make the first security check<br>part of every small team's release.</h2>
+<div class="grid two">
+<div class="card" style="background:#1b3b55;color:white">
+<h3>Planned product work</h3>
+<ul><li>Simpler installation, environment diagnostics and token refresh workflows.</li><li>Better source exclusions, rule relevance and finding prioritization.</li><li>Request-body fuzzing and deeper authenticated workflows.</li><li>Saved baselines, report comparisons and easier CI onboarding.</li></ul>
+</div>
+<div class="card" style="background:#1b3b55;color:white">
+<h3>Planned user acquisition</h3>
+<ul><li>Publish a reproducible demo and beginner-friendly setup guide.</li><li>Recruit solo builders and small startup design partners.</li><li>Share through GitHub and developer communities; learn from onboarding failures.</li><li>Measure time to first useful report, repeat scans and verified fixes.</li></ul>
+</div>
+</div>
+<p style="margin-top:28px;color:#71dfba"><strong>The ask:</strong> try it on an app you own and tell us what blocks your next release.</p>
+<div class="foot"><span>github.com/subodhnarayan/securerelease-cli / Roadmap, not shipped commitments</span><span>06 / 06</span></div>
+</section>
+</body>
+</html>

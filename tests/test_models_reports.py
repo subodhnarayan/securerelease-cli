@@ -1,4 +1,8 @@
 import json
+<<<<<<< HEAD
+=======
+import re
+>>>>>>> dce590a (updated version of cli)
 
 from securerelease.models import Finding, ScanReport
 from securerelease.reports import as_json, as_sarif
@@ -76,3 +80,45 @@ def test_html_report_flags_coverage_gaps_and_handles_empty_reports():
     gap = Finding("HTTP-CONNECTIVITY", "Connectivity", "NOT_TESTED", "INFO", "securerelease_api", "a", "timeout")
     assert "Incomplete coverage" in as_html(ScanReport(profile="api", targets=["a"], findings=[gap], scan_id="1"))
     assert "No checks were run" in as_html(ScanReport(profile="api", targets=[], scan_id="2"))
+<<<<<<< HEAD
+=======
+
+
+def test_html_sections_follow_scanner_order_not_finding_severity():
+    from securerelease.reports import as_html
+
+    sources = [
+        ("semgrep", "FAIL", "HIGH"),
+        ("trivy", "FAIL", "CRITICAL"),
+        ("gitleaks", "ERROR", "INFO"),
+        ("native_http_checks", "WARN", "LOW"),
+        ("securerelease_api", "NOT_TESTED", "INFO"),
+        ("securerelease_ui", "PASS", "INFO"),
+    ]
+    findings = [
+        Finding(source, source, status, severity, source, "target", "summary")
+        for source, status, severity in sources
+    ]
+    findings.append(Finding("UI-FAIL", "UI worst first", "FAIL", "HIGH", "securerelease_ui", "target", "summary"))
+    page = as_html(ScanReport(profile="full", targets=[], findings=findings, scan_id="order"))
+    assert re.findall(r'<section class="grp"><h2 class="group">(.*?) <small>', page) == [
+        "UI scanner", "API scanner", "Website HTTP baseline", "Gitleaks (secrets)",
+        "Trivy (dependencies, IaC)", "Semgrep (SAST)",
+    ]
+    assert page.index("UI worst first") < page.index('data-search="securerelease_ui ')
+    assert page.count('<details class="f ') == len(findings)
+
+
+def test_html_sections_omit_absent_scanners_and_keep_additional_sources():
+    from securerelease.reports import as_html
+
+    findings = [
+        Finding("CUSTOM", "Custom", "FAIL", "HIGH", "custom_engine", "target", "summary"),
+        Finding("ZAP", "ZAP", "WARN", "MEDIUM", "zap", "target", "summary"),
+        Finding("API", "API", "PASS", "INFO", "securerelease_api", "target", "summary"),
+    ]
+    page = as_html(ScanReport(profile="api", targets=[], findings=findings, scan_id="partial"))
+    assert re.findall(r'<section class="grp"><h2 class="group">(.*?) <small>', page) == [
+        "API scanner", "OWASP ZAP (DAST)", "custom_engine",
+    ]
+>>>>>>> dce590a (updated version of cli)

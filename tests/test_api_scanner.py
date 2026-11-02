@@ -60,12 +60,26 @@ def test_mutating_and_delete_operations_are_skipped_by_default(mini_api_url):
     _, found = run(mini_api_url)
     reasons = {s["operation"]: s["reason"] for s in found["API-COVERAGE"].evidence["skipped"]}
     assert "use --allow-mutating" in reasons["POST /orders"] and "never sent" in reasons["DELETE /orders/{id}"]
+<<<<<<< HEAD
+=======
+    assert "--allow-mutating" in found["API-COVERAGE"].remediation
+>>>>>>> dce590a (updated version of cli)
 
 
 def test_allow_mutating_enables_post_but_never_delete(mini_api_url):
     _, found = run(mini_api_url, allow_mutating=True)
     skipped = {s["operation"] for s in found["API-COVERAGE"].evidence["skipped"]}
     assert skipped == {"DELETE /orders/{id}"}
+<<<<<<< HEAD
+=======
+    coverage = found["API-COVERAGE"]
+    assert coverage.status == "WARN"
+    assert coverage.evidence["delete_operations_excluded"] == 1
+    assert coverage.evidence["operations_eligible"] == 8
+    assert "intentionally excluded" in coverage.summary
+    assert "no CLI flag enables DELETE" in coverage.remediation
+    assert "--allow-mutating" not in coverage.remediation
+>>>>>>> dce590a (updated version of cli)
 
 
 def test_spec_from_file_and_missing_file(mini_api_url, tmp_path):
@@ -85,6 +99,38 @@ def test_no_spec_probes_base_url_only():
     assert found["API-COVERAGE"].status == "WARN" and "No OpenAPI specification" in found["API-COVERAGE"].summary
 
 
+<<<<<<< HEAD
+=======
+def test_coverage_does_not_count_operations_without_http_responses():
+    import httpx
+
+    spec = {
+        "openapi": "3.0.0", "info": {"title": "Connectivity", "version": "1"},
+        "paths": {
+            "/ok": {"get": {"responses": {"200": {"description": "OK"}}}},
+            "/offline": {"get": {"responses": {"200": {"description": "OK"}}}},
+        },
+    }
+
+    def handler(request):
+        if request.url.path == "/openapi.json":
+            return httpx.Response(200, json=spec)
+        if request.url.path == "/offline":
+            raise httpx.ConnectError("Connection refused", request=request)
+        return httpx.Response(200, json={"ok": True})
+
+    _, found = run("http://127.0.0.1:9", transport=httpx.MockTransport(handler))
+    coverage = found["API-COVERAGE"]
+    assert coverage.status == "WARN"
+    assert coverage.evidence["operations_probed"] == 1
+    assert coverage.evidence["operations_skipped"] == 1
+    assert coverage.evidence["skipped"] == [
+        {"operation": "GET /offline", "reason": "no HTTP response received"},
+    ]
+    assert "connectivity errors" in coverage.remediation
+
+
+>>>>>>> dce590a (updated version of cli)
 def test_unreachable_api_is_a_coverage_gap_not_a_pass():
     findings, _ = scan_api("http://127.0.0.1:1", allow_private=True, env=ENV)
     assert [f.check_id for f in findings] == ["HTTP-CONNECTIVITY"] and findings[0].status == "NOT_TESTED"
