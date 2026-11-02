@@ -507,29 +507,8 @@ Planned next: role-based authorization tests, CI templates for GitHub Actions / 
 
 GitHub Actions runs tests on Python 3.10-3.13 and builds source and wheel distributions. The workflow also checks that the HTML report template is included in the installed package.
 
-### Uploading this project to GitHub
 
-Create an empty GitHub repository (without an initial README or license), then run from this project folder:
-
-```bash
-# If Git is not initialized yet:
-git init -b main
-
-# Set your own commit identity if it is not configured:
-git config user.name "Your Name"
-git config user.email "your-github-email@example.com"
-
-git add .
-git status
-git commit -m "Prepare SecureRelease 0.1 demo" \
-  -m "Co-authored-by: subodhnarayansah@gmail.com"
-git remote add origin https://github.com/subodhnarayan/securerelease-cli.git
-git push -u origin main
 ```
-
-Replace the repository URL in these instructions and the installation examples with your actual GitHub URL. Review staged files before committing: do not upload credentials, authenticated session files or real scan reports. Local environments, generated reports and common credential files are git-ignored.
-
-The intentionally vulnerable fixtures include **fake test credentials and insecure code**, solely for repeatable demonstrations. GitHub scanners may flag them; verify that alerts refer to the documented fixtures rather than dismissing alerts elsewhere. Never deploy these fixtures.
 
 ```bash
 python -m pip install -e ".[dev]"
