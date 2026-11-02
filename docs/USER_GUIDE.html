@@ -28,16 +28,28 @@ a { color: #2461ae; }
 @media print {
   body { background: white; font-size: 11px; line-height: 1.35; }
   main { max-width: none; margin: 0; }
+<<<<<<< HEAD
   .page { margin: 0; padding: 0; break-after: page; }
   .page:last-child { break-after: auto; }
   h1 { font-size: 26px; } h2 { font-size: 17px; margin-top: 12px; }
   h3 { margin-top: 10px; }
+=======
+  .page { margin: 0; padding: 0; }
+  .page + .page { margin-top: 16px; }
+  h1 { font-size: 26px; } h2 { font-size: 17px; margin-top: 12px; }
+  h3 { margin-top: 10px; }
+  h1, h2, h3, .label { break-after: avoid; }
+>>>>>>> dce590a (updated version of cli)
   p { margin: 6px 0; }
   pre, table, code { font-size: 10px; }
   pre { padding: 7px 10px; line-height: 1.35; }
   th, td { padding: 6px; }
   .note { font-size: 11px; padding: 7px 10px; }
+<<<<<<< HEAD
   pre, tr, .note { break-inside: avoid; }
+=======
+  pre, tr, .note, footer { break-inside: avoid; }
+>>>>>>> dce590a (updated version of cli)
 }
 </style>
 </head>
@@ -58,15 +70,28 @@ a { color: #2461ae; }
 <p class="note"><strong>Only test apps you own or have permission to test.</strong> A clean report is not proof that your application is secure. This is an early-release tool, not a full penetration test.</p>
 
 <h2>2. Install once</h2>
+<<<<<<< HEAD
 <p>Install Python 3.10 or newer. Download the project and open a terminal in its <code>securerelease-cli</code> folder.</p>
 <h3>macOS / Linux</h3>
 <pre>python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
+=======
+<p>Install Git and Python 3.10 or newer. First clone the project and enter its folder:</p>
+<pre>git clone https://github.com/subodhnarayan/securerelease-cli.git
+cd securerelease-cli</pre>
+<p>Then follow the commands for your operating system:</p>
+<h3>macOS / Linux</h3>
+<pre>python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[ui,api]"
+python -m playwright install chromium
+>>>>>>> dce590a (updated version of cli)
 securerelease doctor</pre>
 <h3>Windows PowerShell</h3>
 <pre>py -m venv .venv
 .\.venv\Scripts\Activate.ps1
+<<<<<<< HEAD
 python -m pip install -e .
 securerelease doctor</pre>
 <p><code>doctor</code> shows installed scanner engines. Basic UI and API scans work without optional engines. Repository scans require Trivy, Gitleaks and Semgrep installed separately.</p>
@@ -75,19 +100,47 @@ securerelease doctor</pre>
 playwright install chromium</pre>
 <p>For YAML API specifications: <code>python -m pip install -e ".[api]"</code>. JSON specifications need no extra package. Initial installation and some external scanners may need internet access.</p>
 <footer>1 / 3 - What it does and installation</footer>
+=======
+python -m pip install -e ".[ui,api]"
+python -m playwright install chromium
+securerelease doctor</pre>
+<p>This installs the browser package for React/Vue websites and YAML API support. For non-browser scans only, the minimal installation is <code>python -m pip install -e .</code>. Keep the same virtual environment activated whenever you use the CLI.</p>
+<p>Install repository engines separately. On macOS with Homebrew:</p>
+<pre>brew install trivy gitleaks
+python -m pip install semgrep
+securerelease doctor</pre>
+<p>On other platforms, use the engines' official installation instructions. Confirm all three engines and Playwright are available. Docker/ZAP is only needed for a separate DAST scan. Installation and external rule/vulnerability updates may need internet access.</p>
+<p class="note"><strong>Playwright missing?</strong> Check <code>command -v securerelease</code> (PowerShell: <code>Get-Command securerelease</code>). It must use your CLI virtual environment. <code>doctor</code> detects the Playwright package; you must also install Chromium using the command above.</p>
+<footer>Installation | SecureRelease user guide</footer>
+>>>>>>> dce590a (updated version of cli)
 </section>
 
 <section class="page">
 <div class="label">Set up, then run</div>
 <h1>Start your first scan</h1>
 <h2>3. Easiest option: save your settings</h2>
+<<<<<<< HEAD
 <p>From the project folder, run:</p>
 <pre>securerelease init</pre>
 <p>Answer the questions about your website, API and test credentials. Press Enter to skip anything you do not need. This creates a private <code>.env</code> settings file.</p>
+=======
+<p><strong>Start your application first:</strong> keep its frontend and backend running in separate terminals. The CLI does not start them. Activate the CLI environment, choose a working directory for settings/reports, then run:</p>
+<pre>securerelease init</pre>
+<p>Answer the prompts below. This creates a private <code>.env</code> settings file in the current folder.</p>
+<table>
+<tr><th>Setup prompt</th><th>What to enter</th></tr>
+<tr><td>Website / UI URL</td><td>A page to scan; use a protected page such as <code>/dashboard</code> for authenticated coverage.</td></tr>
+<tr><td>API URL / OpenAPI</td><td>The running backend's base URL and its OpenAPI file or URL, often <code>/openapi.json</code>.</td></tr>
+<tr><td><strong>Repository folder</strong></td><td><strong>Enter the absolute codebase path, or <code>.</code> from that app's root.</strong> Blank means no Gitleaks, Trivy or Semgrep scan. URLs do not identify the codebase.</td></tr>
+<tr><td>API tokens / UI login</td><td>Use fresh test tokens and credentials. Two different API users with private seeded objects enable BOLA checks. Tokens may expire or become invalid after a backend restart.</td></tr>
+<tr><td>Private targets / active tests</td><td>Yes only for approved targets you own. These enable local access / active probes, not repository selection or write requests.</td></tr>
+</table>
+>>>>>>> dce590a (updated version of cli)
 <p>Or copy the example yourself: <code>cp .env.example .env</code> (PowerShell: <code>Copy-Item .env.example .env</code>). Edit the following lines:</p>
 <pre>SECURERELEASE_UI_URL=https://your-staging.example
 SECURERELEASE_API_URL=https://api.your-staging.example
 SECURERELEASE_OPENAPI_SPEC=./openapi.json
+<<<<<<< HEAD
 SECURERELEASE_API_TOKEN=your-test-user-token
 SECURERELEASE_AUTHORIZED=false
 SECURERELEASE_UI_ENGINE=crawler</pre>
@@ -95,6 +148,19 @@ SECURERELEASE_UI_ENGINE=crawler</pre>
 <pre>securerelease run</pre>
 <p>The app scans the targets you configured and writes <code>reports/securerelease-report.html</code>. To scan only one part: <code>securerelease run --profile ui</code> or <code>securerelease run --profile api</code>.</p>
 <p class="note"><strong>Keep credentials private.</strong> Do not share or commit <code>.env</code>. Use test accounts. Tokens are hidden in the setup prompt, but the file stores them in plain text. Only run from a folder whose settings file you trust.</p>
+=======
+SECURERELEASE_SOURCE=/absolute/path/to/your-app
+SECURERELEASE_API_TOKEN=your-test-user-token
+SECURERELEASE_AUTHORIZED=false
+SECURERELEASE_UI_ENGINE=browser</pre>
+<p><strong>Replace the example addresses and token.</strong> Leave unused endpoints and credentials empty. Your OpenAPI file describes your API endpoints; ask your API developer for it.</p>
+<pre>securerelease run</pre>
+<p>The app scans the targets you configured and writes <code>reports/securerelease-report.html</code>. To scan only one part: <code>securerelease run --profile ui</code> or <code>securerelease run --profile api</code>.</p>
+<p>With UI, API and repository configured, the full profile is inferred. React apps need the browser engine; default <code>auto</code> uses it if installed. Add <code>SECURERELEASE_UI_ENGINE=browser</code> to require it explicitly.</p>
+<p class="note"><strong>Write coverage:</strong> setup does not ask about POST/PUT/PATCH. Add <code>SECURERELEASE_ALLOW_MUTATING=true</code> manually only for disposable test data. DELETE is never sent. Setup overwrite replaces manually added settings too, so restore browser/write/custom-CA settings as needed.</p>
+<p class="note"><strong>Keep credentials private.</strong> Do not share or commit <code>.env</code>. Use test accounts. Tokens are hidden in the setup prompt, but the file stores them in plain text. Only run from a folder whose settings file you trust.</p>
+<p>Add <code>.env</code> and <code>.env.*</code> to your app's own Git ignore rules (allow safe <code>.env.example</code> templates). Ignore rules do not remove tracked secrets or guarantee exclusion from Gitleaks directory scans. Rotate leaked credentials; this adapter does not scan Git history.</p>
+>>>>>>> dce590a (updated version of cli)
 
 <h2>4. Alternative: use terminal commands</h2>
 <p>These do not read <code>.env</code> unless you add <code>--env-file .env</code>.</p>
@@ -107,7 +173,14 @@ SECURERELEASE_UI_ENGINE=crawler</pre>
 <p>Commands above use macOS/Linux line continuations. In PowerShell, put each command on one line.</p>
 <p>For authenticated APIs, set <code>SECURERELEASE_API_TOKEN</code> in <code>.env</code>, then run <code>securerelease run --profile api</code>. Terminal-only users can pass <code>--api-token-env API_TOKEN_A</code> after setting that environment variable securely.</p>
 <p>For localhost, add <code>--allow-private-targets</code> or set <code>SECURERELEASE_ALLOW_PRIVATE_TARGETS=true</code>. Active tests need <code>--authorized</code> or <code>SECURERELEASE_AUTHORIZED=true</code>; use these only on approved test environments. Leave <code>SECURERELEASE_ALLOW_MUTATING=false</code> to avoid API writes.</p>
+<<<<<<< HEAD
 <footer>2 / 3 - Settings and commands</footer>
+=======
+<h3>Two-app demo: same commands, same report</h3>
+<p>Stay in one working directory. Run <code>securerelease init</code> for app A, then <code>securerelease run</code> and show the report. Run <code>init</code> again, confirm overwrite and enter app B's URLs, absolute repository path and credentials. Run <code>securerelease run</code> again. Both use <code>reports/securerelease-report.html</code>; the second overwrites it. No special app-name flag is needed. Save copies if you want to compare.</p>
+<p>Do not leave exported <code>SECURERELEASE_*</code> variables from the first app in your terminal: they override the new file. Relative paths and output locations use the current working directory.</p>
+<footer>Setup and commands | SecureRelease user guide</footer>
+>>>>>>> dce590a (updated version of cli)
 </section>
 
 <section class="page">
@@ -118,6 +191,10 @@ SECURERELEASE_UI_ENGINE=crawler</pre>
 <pre>open reports/securerelease-report.html</pre>
 <p>For terminal commands that use another output name, open that file instead.</p>
 <ol>
+<<<<<<< HEAD
+=======
+<li><strong>Check the six sections.</strong> UI scanner, API scanner, Website HTTP baseline, Gitleaks, Trivy and Semgrep appear in that order when they have results. ZAP requires a separate DAST profile.</li>
+>>>>>>> dce590a (updated version of cli)
 <li><strong>Check coverage first.</strong> Search for <code>UI-COVERAGE</code> and <code>API-COVERAGE</code>. These say how many pages or operations were reached and what was skipped. A small scan cannot assess your whole app.</li>
 <li><strong>Read the banner and counts.</strong> They summarize high-impact findings and execution gaps. The HTML banner uses CRITICAL/HIGH findings; a custom terminal failure threshold may differ.</li>
 <li><strong>Use the FAIL and ERROR filters.</strong> Review CRITICAL/HIGH findings first. ERROR means the scan needs fixing, not necessarily that the target is vulnerable.</li>
@@ -132,17 +209,39 @@ SECURERELEASE_UI_ENGINE=crawler</pre>
 <tr><td><strong>NOT_TESTED</strong></td><td>There is no result for this check. It is <strong>not a pass</strong>.</td></tr>
 <tr><td><strong>PASS</strong></td><td>This specific check passed. Other security issues may still exist.</td></tr>
 </table>
+<<<<<<< HEAD
 <p><strong>Example:</strong> "Password in GET request" means a login form puts the password in a URL. Ask your developer to use POST over HTTPS, then scan again.</p>
+=======
+<p><strong>Form warnings need review:</strong> HTML attributes alone may not describe a JavaScript form's actual API request. Confirm how the browser submits it before claiming passwords are sent in URLs.</p>
+<table>
+<tr><th>Expected limitation</th><th>Meaning / action</th></tr>
+<tr><td>HSTS or mixed content NOT_TESTED</td><td>Your target uses HTTP. These checks require HTTPS; no certificate setup is necessary for an HTTP demo.</td></tr>
+<tr><td>Cookie attributes NOT_TESTED</td><td>No cookies were observed in that check. The HTTP baseline does not perform login. Inspect authenticated browser cookie results separately.</td></tr>
+<tr><td>DELETE skipped / coverage WARN</td><td>Intentional safety policy, not missing application code. Test deletion separately with disposable fixtures.</td></tr>
+<tr><td>BOLA / fuzzing NOT_TESTED</td><td>BOLA needs two users and readable object-by-ID endpoints. Current API fuzzing targets path/query parameters, not JSON/form request bodies.</td></tr>
+<tr><td>Rate-limit PASS / other checks rejected</td><td>Headers or 429 indicate throttling. Real limits may block later probes. Wait for the retry period; a 429 is not proof of correct authorization.</td></tr>
+</table>
+>>>>>>> dce590a (updated version of cli)
 
 <h2>6. Save a scan report as PDF</h2>
 <p>Open the HTML report, clear any filters, and expand the findings you want to include. Select <strong>Print</strong> (Ctrl+P or Command+P), choose <strong>Save as PDF</strong>, and save.</p>
 <p>PDF is a static copy: filters and expandable details will not be interactive. Keep the HTML file too. The CLI currently produces HTML, not a direct <code>--format pdf</code> export.</p>
 
 <h2>7. If something goes wrong</h2>
+<<<<<<< HEAD
 <p><strong>Timeout:</strong> check that the URL works on your network. <strong>Authentication rejected:</strong> replace the expired or incorrect token. <strong>Missing scanner:</strong> run <code>securerelease doctor</code>. <strong>Certificate error:</strong> use an approved CA bundle; see the README troubleshooting section.</p>
 <p>Exit codes: <strong>0</strong> = no blocking result; <strong>1</strong> = blocking findings (default CRITICAL/HIGH); <strong>2</strong> = execution error or certain required coverage gaps. <code>--no-fail-on-findings</code> ignores findings for the exit code, but execution errors still fail.</p>
 <p>Try the local demo on macOS/Linux: <code>./scripts/demo.sh</code>. It generates <code>reports/demo-report.html</code>. Its vulnerable fixtures are for practice only; never deploy them.</p>
 <footer>3 / 3 - Report reading and PDF sharing | More detail: <a href="../README.md">README</a> and <a href="../.env.example">settings example</a></footer>
+=======
+<p><strong>Timeout:</strong> check that the URL works on your network and the target application is running.</p>
+<p><strong>Local frontend proxy ECONNREFUSED:</strong> start the backend on the port expected by your frontend. Opening the UI alone does not start the API.</p>
+<p><strong>HTTPS target trust:</strong> publicly trusted sites normally need no custom setup. A private development CA must be trusted by each browser/laptop testing the HTTPS app. HTTP clients can use an explicit approved CA bundle; browser trust is separate. Keep CA private keys private. HTTP loopback testing is sufficient for the demo, but not for production transport security.</p>
+<p><strong>Lots of source findings?</strong> Inspect file paths: results under virtual environments, installed packages, generated output or fixtures are not automatically vulnerabilities in your own application. Check the scan scope and rule applicability; do not dismiss dependency findings simply because application checks passed.</p>
+<p>Exit codes: <strong>0</strong> = no blocking result; <strong>1</strong> = blocking findings (default CRITICAL/HIGH); <strong>2</strong> = execution error or certain required coverage gaps. <code>--no-fail-on-findings</code> ignores findings for the exit code, but execution errors still fail.</p>
+<p>Try the local demo on macOS/Linux: <code>./scripts/demo.sh</code>. It generates <code>reports/demo-report.html</code>. Its vulnerable fixtures are for practice only; never deploy them.</p>
+<footer>Results and troubleshooting | More detail: <a href="../README.md">README</a> and <a href="../.env.example">settings example</a></footer>
+>>>>>>> dce590a (updated version of cli)
 </section>
 </main>
 </body>
