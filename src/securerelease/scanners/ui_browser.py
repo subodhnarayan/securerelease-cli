@@ -24,13 +24,6 @@ class BrowserUnavailable(RuntimeError):
     """Playwright or its browser binary is not installed."""
 
 
-<<<<<<< HEAD
-=======
-class BrowserLoginFailed(RuntimeError):
-    """The scripted login did not establish a persistent browser session."""
-
-
->>>>>>> dce590a (updated version of cli)
 def browser_available() -> bool:
     return importlib.util.find_spec("playwright") is not None
 
@@ -50,11 +43,7 @@ def crawl_with_browser(
     login: tuple[str, str, str] | None = None,  # (login_url, username, password)
 ) -> tuple[list[PageSnapshot], dict[str, Any]]:
     try:
-<<<<<<< HEAD
         from playwright.sync_api import sync_playwright
-=======
-        from playwright.sync_api import Error as PlaywrightError, sync_playwright
->>>>>>> dce590a (updated version of cli)
     except ImportError as exc:
         raise BrowserUnavailable("The Playwright package is not installed.") from exc
 
@@ -108,38 +97,11 @@ def crawl_with_browser(
 
             if login:
                 login_url, username, password = login
-<<<<<<< HEAD
                 page.goto(login_url, timeout=NAV_TIMEOUT_MS, wait_until="networkidle")
                 page.fill("input[type=password]", password)
                 page.fill("input[type=email], input[type=text], input:not([type])", username)
                 page.keyboard.press("Enter")
                 page.wait_for_load_state("networkidle", timeout=NAV_TIMEOUT_MS)
-=======
-                if origin_of(login_url) != origin:
-                    raise BrowserLoginFailed("The login URL must have the same origin as the UI target.")
-                try:
-                    page.goto(login_url, timeout=NAV_TIMEOUT_MS, wait_until="networkidle")
-                    if origin_of(page.url) != origin:
-                        raise BrowserLoginFailed("The login page redirected outside the UI origin.")
-                    page.fill("input[type=password]", password)
-                    page.fill("input[type=email], input[type=text], input:not([type])", username)
-                    page.keyboard.press("Enter")
-                    # A SPA can still be idle while its asynchronous login request is starting.
-                    page.locator("input[type=password]:visible").wait_for(state="hidden", timeout=NAV_TIMEOUT_MS)
-                    response = page.goto(start_url, timeout=NAV_TIMEOUT_MS, wait_until="networkidle")
-                    if response is None or response.status >= 400 or origin_of(page.url) != origin:
-                        raise BrowserLoginFailed("The UI target could not be loaded after login.")
-                    login_path = urlparse(login_url).path.rstrip("/")
-                    if (urlparse(start_url).path.rstrip("/") != login_path
-                            and urlparse(page.url).path.rstrip("/") == login_path):
-                        raise BrowserLoginFailed("The UI target redirected back to the login page.")
-                    if page.locator("input[type=password]:visible").count():
-                        raise BrowserLoginFailed("A password form remained visible after reloading the UI target.")
-                except PlaywrightError as exc:
-                    raise BrowserLoginFailed(
-                        "Login did not complete: the password form must disappear and the session must survive reloading the UI target."
-                    ) from exc
->>>>>>> dce590a (updated version of cli)
 
             queue: deque[tuple[str, int]] = deque([(urldefrag(start_url)[0], 0)])
             seen = {urldefrag(start_url)[0]}
@@ -183,11 +145,7 @@ def crawl_with_browser(
                         queue.append((link, depth + 1))
             context.close()
             browser.close()
-<<<<<<< HEAD
     except BrowserUnavailable:
-=======
-    except (BrowserUnavailable, BrowserLoginFailed):
->>>>>>> dce590a (updated version of cli)
         raise
     except Exception as exc:
         raise BrowserUnavailable(f"The browser session failed: {str(exc).splitlines()[0][:160]}") from exc
@@ -200,9 +158,5 @@ def crawl_with_browser(
         "engine": "browser", "pages_visited": visited, "pages_analyzed": len(pages), "scripts_fetched": len(scripts),
         "forms_found": sum(len(s.parsed().forms) for s in pages), "errors": errors[:5], "max_pages": max_pages,
         "max_depth": max_depth,
-<<<<<<< HEAD
-=======
-        "login_verified": bool(login),
->>>>>>> dce590a (updated version of cli)
     }
     return snapshots, stats

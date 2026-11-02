@@ -56,11 +56,7 @@ Key ideas:
 No internet and no real target needed. The demo starts two intentionally vulnerable local apps (a UI and an API), scans them together with a sample vulnerable repository, writes an HTML report and opens it.
 
 ```bash
-<<<<<<< HEAD
 git clone <this-repository-url> securerelease-cli
-=======
-git clone https://github.com/subodhnarayan/securerelease-cli.git
->>>>>>> dce590a (updated version of cli)
 cd securerelease-cli
 python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"
@@ -99,33 +95,16 @@ The UI scanner, API scanner and website baseline work **without** any optional t
 ### Install from source
 
 ```bash
-<<<<<<< HEAD
 git clone <this-repository-url> securerelease-cli
-=======
-git clone https://github.com/subodhnarayan/securerelease-cli.git
->>>>>>> dce590a (updated version of cli)
 cd securerelease-cli
 
 python3 -m venv .venv
 source .venv/bin/activate            # Windows PowerShell: .\.venv\Scripts\Activate.ps1
 
 python -m pip install --upgrade pip
-<<<<<<< HEAD
 python -m pip install -e .
 ```
 
-=======
-python -m pip install -e ".[ui,api]"
-python -m playwright install chromium
-```
-
-This recommended installation includes the browser engine for React/Vue and
-other JavaScript-rendered UIs, plus YAML OpenAPI support. For HTTP/API-only use
-without browser scanning, `python -m pip install -e .` is sufficient. Keep this
-virtual environment activated for `init`, `doctor` and `run`; an installation in
-another Python environment does not share these packages.
-
->>>>>>> dce590a (updated version of cli)
 ### Optional extras
 
 ```bash
@@ -134,32 +113,12 @@ python -m pip install -e ".[api]"
 
 # Browser engine for JavaScript-heavy single-page apps
 python -m pip install -e ".[ui]"
-<<<<<<< HEAD
 playwright install chromium
 
 # Everything for development and tests
 python -m pip install -e ".[dev]"
 ```
 
-=======
-python -m playwright install chromium
-
-# Test tools and YAML support (add [ui] separately for browser tests)
-python -m pip install -e ".[dev]"
-```
-
-On macOS with Homebrew, install the repository engines separately:
-
-```bash
-brew install trivy gitleaks
-python -m pip install semgrep
-```
-
-For other platforms, follow each engine's official installation instructions.
-Docker and the ZAP image are needed only for the separate `dast` profile, not
-the normal six-section full scan.
-
->>>>>>> dce590a (updated version of cli)
 ### Verify the installation
 
 ```bash
@@ -177,15 +136,6 @@ securerelease doctor
 [NOT INSTALLED] playwright: not installed
 ```
 
-<<<<<<< HEAD
-=======
-The output above illustrates a missing browser package; before a React UI demo,
-ensure Playwright is available. `doctor` detects the package, not a successful
-Chromium launch, so also complete `python -m playwright install chromium`.
-If packages appear missing, check `command -v securerelease` (PowerShell:
-`Get-Command securerelease`) and reactivate the CLI environment.
-
->>>>>>> dce590a (updated version of cli)
 ---
 
 ## Quick start
@@ -196,40 +146,6 @@ You can configure a scan in two ways. Both give the same results.
 
 ### Option A — a `.env` file (easiest: set it once, run with one command)
 
-<<<<<<< HEAD
-=======
-Recommended first-time workflow:
-
-1. Start the target app's frontend and backend in separate terminals. SecureRelease
-   scans running services; it does not start them.
-2. Keep the CLI environment activated. Choose a working directory for settings
-   and reports, then run `securerelease init`.
-3. Enter UI and API URLs and an OpenAPI URL/file. At **Repository folder**, enter
-   the codebase's absolute path, or `.` only if you are in that codebase's root.
-   Leaving this prompt blank omits **Trivy, Gitleaks and Semgrep**; URLs cannot
-   identify the source folder.
-4. Supply disposable test-user credentials and fresh tokens if required. For
-   BOLA/IDOR use two different users with seeded, private objects. Keep the
-   backend running: expiry or restart can invalidate tokens.
-5. Allow private targets for your own localhost app. Enable active tests only
-   with permission. These choices do not enable repository engines or API writes.
-6. Run `securerelease run`, then open `reports/securerelease-report.html`.
-
-With UI, API and repository configured, `run` infers the full profile and includes
-UI scanner, API scanner, Website HTTP baseline, Gitleaks, Trivy and Semgrep.
-Only sections with results appear. ZAP is a separate profile.
-
-`init` currently does not ask about browser mode or write requests. For React,
-install Playwright as above; the default `auto` mode selects it when available.
-To require it explicitly, set `SECURERELEASE_UI_ENGINE=browser` in `.env`.
-For POST/PUT/PATCH coverage on disposable data only, manually add
-`SECURERELEASE_ALLOW_MUTATING=true` after setup. DELETE is never sent.
-Rerunning `init` replaces the file when you approve overwrite, including manual
-settings such as custom CA paths and write opt-in; restore any needed settings.
-
-Alternatively, create the settings manually:
-
->>>>>>> dce590a (updated version of cli)
 ```bash
 cp .env.example .env        # or: securerelease init   (asks you questions and writes .env for you)
 ```
@@ -240,10 +156,6 @@ Open `.env` and fill in your endpoints and, if needed, test credentials:
 SECURERELEASE_UI_URL=https://staging.example.com
 SECURERELEASE_API_URL=https://api.staging.example.com
 SECURERELEASE_OPENAPI_SPEC=./openapi.json
-<<<<<<< HEAD
-=======
-SECURERELEASE_SOURCE=/absolute/path/to/your-app
->>>>>>> dce590a (updated version of cli)
 SECURERELEASE_API_TOKEN=<token for test user A>
 SECURERELEASE_API_TOKEN_B=<token for test user B>      # optional, for BOLA/IDOR checks
 ```
@@ -256,28 +168,6 @@ securerelease run
 
 `run` picks what to scan from what you configured (UI only, API only, repository only, or everything together), prints a short summary (secrets are never printed), and writes an HTML report to `reports/securerelease-report.html`. Every setting is documented inside [`.env.example`](.env.example). `.env` is git-ignored — never commit it.
 
-<<<<<<< HEAD
-=======
-Settings and relative source/spec/output paths are resolved from the current
-working directory. Add `.env` and `.env.*` to the target repository's own
-`.gitignore` too (allow `.env.example` templates). Ignore rules do not untrack
-previously committed files or guarantee exclusion from directory secret scans.
-Gitleaks scans the working tree, not Git history; rotate exposed credentials.
-
-For a two-app demo using the same commands and report file, stay in one working
-directory: `securerelease init` -> enter app A's URLs and absolute repository path
--> `securerelease run` -> show the report. Repeat `init`, approve overwrite, enter
-app B's settings, then run again. The default report is overwritten; save a copy
-first if you need comparison. Do not retain exported `SECURERELEASE_*` settings
-from the first app: environment variables override the newly written file.
-
-Local HTTP needs no certificates, but HSTS and mixed-content checks are expected
-to be NOT_TESTED. HTTPS targets must have a valid certificate; private development
-CAs require explicit client trust, including browser trust on every test laptop.
-Do not disable TLS verification. Plain HTTP and development cookies without
-Secure are for loopback testing only, not public deployment.
-
->>>>>>> dce590a (updated version of cli)
 | Command | What it does |
 | --- | --- |
 | `securerelease init` | Asks a few questions (secrets are typed hidden) and writes `.env` with owner-only permissions |
@@ -350,14 +240,6 @@ Writes are even more restricted: `POST`/`PUT`/`PATCH` are skipped unless you add
 
 - **Give it your OpenAPI/Swagger spec** with `--openapi-spec` (file path or URL). Without it, the scanner tries `/openapi.json`, `/swagger.json` and `/v3/api-docs`; if none exist, only the base URL is probed and the report says so.
 - **Check the coverage finding first.** `API-COVERAGE` tells you how many documented operations were actually probed, and why others were skipped.
-<<<<<<< HEAD
-=======
-- DELETE exclusions are identified in the coverage summary and evidence, not
-  presented as missing application code. Coverage remains WARN for skipped
-  operations. `--allow-mutating` enables POST/PUT/PATCH, never DELETE; validate
-  deletion separately using disposable fixtures. A received 4xx/429 response
-  counts as a probe, not proof of a successful workflow.
->>>>>>> dce590a (updated version of cli)
 - The request budget is `--max-requests` (default `300`).
 
 ### UI scanning tips
@@ -415,19 +297,6 @@ export APP_COOKIE='Cookie: session=abc123'
 securerelease ui-scan --url https://staging.example --ui-auth-header-env APP_COOKIE
 ```
 
-<<<<<<< HEAD
-=======
-For React and other JavaScript-rendered apps, use `--ui-engine browser` and a protected
-page (for example `/dashboard`) as `--url`. Browser scripted login waits for the
-password form to disappear, then reloads the target to check that the session
-persists. A remaining password form, redirect back to login, or failed target load
-produces `UI-AUTH-LOGIN: ERROR`, not authenticated coverage. The login URL must use
-the target's origin. This verifies the login transition, not every authorization
-rule. Header/cookie and storage-state inputs are reported as
-`authentication_configured`; their presence alone does not set coverage's
-`authenticated` flag.
-
->>>>>>> dce590a (updated version of cli)
 ---
 
 ## Understanding the report
@@ -448,14 +317,7 @@ Use `--output <file>` to write to a file instead of the terminal.
 
 - A **verdict banner**: *Action needed* (a high-impact finding exists), *Incomplete coverage* (checks could not run), or *No blocking findings in the checks that ran*.
 - Counts by status and severity.
-<<<<<<< HEAD
 - Findings **grouped by scanner**, worst first, each expandable to show evidence and remediation.
-=======
-- Findings grouped in this order: **UI scanner**, **API scanner**, **Website HTTP baseline**,
-  **Gitleaks (secrets)**, **Trivy (dependencies, IaC)**, **Semgrep (SAST)**.
-  Only sections with results appear; ZAP and additional sources follow when present.
-  Findings within each section remain worst first, expandable to show evidence and remediation.
->>>>>>> dce590a (updated version of cli)
 - Status filter buttons and a search box.
 - Notes, tool versions and a limitations statement.
 
@@ -617,7 +479,6 @@ Trivy (dependencies and configuration), Gitleaks (secrets in the working tree) a
 
 | Symptom | Cause and fix |
 | --- | --- |
-<<<<<<< HEAD
 | `CERTIFICATE_VERIFY_FAILED … self-signed certificate in certificate chain` | A corporate proxy re-signs HTTPS traffic. Point to a CA bundle that includes it:<br>`security find-certificate -a -p /Library/Keychains/System.keychain /System/Library/Keychains/SystemRootCertificates.keychain > ~/ca-bundle.pem`<br>`export SECURERELEASE_CA_BUNDLE=~/ca-bundle.pem` (`SSL_CERT_FILE` and `REQUESTS_CA_BUNDLE` also work) |
 | `HTTP-CONNECTIVITY … ReadTimeout` | The target didn't answer from your network. The report shows the first error; confirm with `curl -i <url>`. |
 | `TARGET-POLICY` / "did not satisfy the safety policy" | The target is local/private or uses a non-standard port. Add `--allow-private-targets` (or `SECURERELEASE_ALLOW_PRIVATE_TARGETS=true`) if you own it. |
@@ -626,13 +487,6 @@ Trivy (dependencies and configuration), Gitleaks (secrets in the working tree) a
 | `API-SPEC-LOAD` error | The spec file/URL couldn't be read. Check the path, or install `[api]` to read YAML specs. |
 | Very few pages or operations scanned | Read the `UI-COVERAGE` / `API-COVERAGE` finding; raise `--max-pages` / `--max-requests`, give an OpenAPI spec, or use `--ui-engine browser`. |
 | Authenticated scan shows all secured operations rejected | The token is expired or belongs to a different environment. |
-=======
-| `HTTP-CONNECTIVITY … ReadTimeout` | The target didn't answer from your network. The report shows the first error; confirm with `curl -i <url>`. |
-| `TARGET-POLICY` / "did not satisfy the safety policy" | The target is local/private or uses a non-standard port. Add `--allow-private-targets` (or `SECURERELEASE_ALLOW_PRIVATE_TARGETS=true`) if you own it. |
-| `No target is configured` when running `securerelease run` | `.env` is missing or has no `SECURERELEASE_UI_URL`, `SECURERELEASE_API_URL` or `SECURERELEASE_SOURCE`. Run `securerelease init` or copy `.env.example` to `.env`. Run the command from the folder that contains `.env`, or pass `--env-file`. |
-| `API-SPEC-LOAD` error | The spec file/URL couldn't be read. Check the path, or install `[api]` to read YAML specs. |
-| Very few pages or operations scanned | Read the `UI-COVERAGE` / `API-COVERAGE` finding; raise `--max-pages` / `--max-requests`, give an OpenAPI spec, or use `--ui-engine browser`. |
->>>>>>> dce590a (updated version of cli)
 
 ---
 
@@ -653,36 +507,9 @@ Planned next: role-based authorization tests, CI templates for GitHub Actions / 
 
 GitHub Actions runs tests on Python 3.10-3.13 and builds source and wheel distributions. The workflow also checks that the HTML report template is included in the installed package.
 
-<<<<<<< HEAD
 
 ```
 
-=======
-### Uploading this project to GitHub
-
-Create an empty GitHub repository (without an initial README or license), then run from this project folder:
-
-```bash
-# If Git is not initialized yet:
-git init -b main
-
-# Set your own commit identity if it is not configured:
-git config user.name "Your Name"
-git config user.email "your-github-email@example.com"
-
-git add .
-git status
-git commit -m "Prepare SecureRelease 0.1 demo" \
-  -m "Co-authored-by: subodhnarayansah@gmail.com"
-git remote add origin https://github.com/subodhnarayan/securerelease-cli.git
-git push -u origin main
-```
-
-Replace the repository URL in these instructions and the installation examples with your actual GitHub URL. Review staged files before committing: do not upload credentials, authenticated session files or real scan reports. Local environments, generated reports and common credential files are git-ignored.
-
-The intentionally vulnerable fixtures include **fake test credentials and insecure code**, solely for repeatable demonstrations. GitHub scanners may flag them; verify that alerts refer to the documented fixtures rather than dismissing alerts elsewhere. Never deploy these fixtures.
-
->>>>>>> dce590a (updated version of cli)
 ```bash
 python -m pip install -e ".[dev]"
 python -m pytest
@@ -720,41 +547,3 @@ The fixtures under `tests/fixtures/` are **intentionally vulnerable. Never deplo
 ## License
 
 MIT — see [LICENSE](LICENSE).
-<<<<<<< HEAD
-=======
-
-
-
-
-
-
-
-Use these values when running securerelease init:
-
-Original app	
-
-Website/UI URL	http://localhost:5173/dashboard
-API base URL	http://127.0.0.1:8000
-OpenAPI URL	http://127.0.0.1:8000/openapi.json
-Repository folder to scan for secrets and vulnerable code (e.g. .): .
-TokenA: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdWJvZGhAZ21haWwuY29tIiwiZXhwIjoxNzkzNjM4NDgyfQ.lzMZYdNDWfnXbAvEva4AHr2MB3fFx9nzQ1NlVqESEhU
-TokenB: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdWJvZGhuYXJheWFuQGdtYWlsLmNvbSIsImV4cCI6MTc5MzYzODU4MH0.Pk_Q0OXe9CurYnt4ZZZnrVm_Pj-XXWNIn0XpT7TV40w
-
-Login page URL	http://localhost:5173/login
-Test username:subodh@gmail.com
-Test password: subodh
-
-
-Improved app
-
-
-Website/UI URL	http://localhost:5174/dashboard
-API base URL	http://127.0.0.1:8001
-OpenAPI URL	http://127.0.0.1:8001/openapi.json
-Repository folder to scan for secrets and vulnerable code (e.g. .): .
-TokenA: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdWJvZGhuYXJheWFuQGdtYWlsLmNvbSIsImV4cCI6MTc5MzYzOTE2MX0.TRO79IeQHM5TZO38Ds6bYn9e0Ymydr7sfx1xIysDxGw
-TokenB: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdWJvZGhuYXJheWFuMUBnbWFpbC5jb20iLCJleHAiOjE3OTM2MzkzNTZ9.eI9MH1RTZfb-fQ2OF-RhkoKOsLif6v4TsoKlJqfIekU
-Login page URL	http://localhost:5174/login
-Test username:subodhnarayan@gmail.com
-Test password: subodhnarayan@gmail.com
->>>>>>> dce590a (updated version of cli)

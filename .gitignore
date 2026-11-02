@@ -9,10 +9,6 @@ build/
 reports/
 .env
 .env.*
-<<<<<<< HEAD
-=======
-improved.env
->>>>>>> dce590a (updated version of cli)
 !.env.example
 .DS_Store
 .idea/

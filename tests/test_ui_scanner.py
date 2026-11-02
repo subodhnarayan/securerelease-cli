@@ -74,44 +74,6 @@ def test_scripted_login_posts_credentials_without_reporting_them(mini_ui_url):
     login = found["UI-AUTH-LOGIN"]
     assert login.status == "PASS" and login.evidence["cookies_set"] >= 1
     assert "s3cret-pass" not in repr([f.to_dict() for f in findings])
-<<<<<<< HEAD
-=======
-    assert found["UI-COVERAGE"].evidence["authenticated"] is True
-
-
-def test_browser_login_failure_is_an_auth_error(monkeypatch):
-    from securerelease.scanners.ui_browser import BrowserLoginFailed
-
-    def fail(*args, **kwargs):
-        raise BrowserLoginFailed("The UI target redirected back to the login page.")
-
-    monkeypatch.setattr("securerelease.scanners.ui_scanner.crawl_with_browser", fail)
-    findings, versions = scan_ui(
-        "http://127.0.0.1:9/dashboard", allow_private=True, engine="browser",
-        login_url="http://127.0.0.1:9/login", user_env="UI_USER", pass_env="UI_PASS", env=ENV,
-    )
-    assert [f.check_id for f in findings] == ["UI-AUTH-LOGIN"]
-    assert findings[0].status == "ERROR"
-    assert versions == {"ui-engine": "playwright"}
-    assert "s3cret-pass" not in repr([f.to_dict() for f in findings])
-
-
-def test_browser_login_verified_in_coverage(monkeypatch):
-    def crawl(*args, **kwargs):
-        return [snapshot("http://127.0.0.1:9/dashboard", "<html>Dashboard</html>")], {
-            "engine": "browser", "pages_analyzed": 1, "login_verified": True,
-        }
-
-    monkeypatch.setattr("securerelease.scanners.ui_scanner.crawl_with_browser", crawl)
-    findings, _ = scan_ui(
-        "http://127.0.0.1:9/dashboard", allow_private=True, engine="browser",
-        login_url="http://127.0.0.1:9/login", user_env="UI_USER", pass_env="UI_PASS", env=ENV,
-        transport=httpx.MockTransport(lambda request: httpx.Response(404)),
-    )
-    found = by_id(findings)
-    assert found["UI-AUTH-LOGIN"].status == "PASS"
-    assert found["UI-COVERAGE"].evidence["authenticated"] is True
->>>>>>> dce590a (updated version of cli)
 
 
 def test_auth_header_is_sent_and_redacted():
@@ -125,11 +87,6 @@ def test_auth_header_is_sent_and_redacted():
                           transport=httpx.MockTransport(handler), env=ENV)
     assert seen and all(c == "session=abc999xyz" for c in seen)
     assert "abc999xyz" not in repr([f.to_dict() for f in findings])
-<<<<<<< HEAD
-=======
-    assert by_id(findings)["UI-COVERAGE"].evidence["authentication_configured"] is True
-    assert by_id(findings)["UI-COVERAGE"].evidence["authenticated"] is False
->>>>>>> dce590a (updated version of cli)
 
 
 def test_spa_catch_all_does_not_trigger_exposed_path_false_positive():
